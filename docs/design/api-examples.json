@@ -1,0 +1,226 @@
+{
+  "create": {
+    "method": "POST",
+    "path": "/api/v1/trips",
+    "request": {
+      "name": "杭州三日游",
+      "startDate": "2026-12-01",
+      "dayCount": 3,
+      "budgetLimitCents": 100000
+    },
+    "status": 201,
+    "response": {
+      "code": "TRIP_CREATED",
+      "data": {
+        "id": "trip-001",
+        "name": "杭州三日游",
+        "startDate": "2026-12-01",
+        "dayCount": 3,
+        "budgetLimitCents": 100000,
+        "revision": 1,
+        "days": [
+          {
+            "id": "day-001",
+            "dayIndex": 1,
+            "startMinutes": 540,
+            "endMinutes": 1260,
+            "items": [],
+            "expenses": []
+          },
+          {
+            "id": "day-002",
+            "dayIndex": 2,
+            "startMinutes": 540,
+            "endMinutes": 1260,
+            "items": [],
+            "expenses": []
+          },
+          {
+            "id": "day-003",
+            "dayIndex": 3,
+            "startMinutes": 540,
+            "endMinutes": 1260,
+            "items": [],
+            "expenses": []
+          }
+        ]
+      }
+    }
+  },
+  "load": {
+    "method": "GET",
+    "path": "/api/v1/trips/trip-001",
+    "status": 200,
+    "response": {
+      "code": "TRIP_LOADED",
+      "data": {
+        "id": "trip-001",
+        "name": "杭州三日游",
+        "startDate": "2026-12-01",
+        "dayCount": 3,
+        "budgetLimitCents": 100000,
+        "revision": 1,
+        "days": [
+          {
+            "id": "day-001",
+            "dayIndex": 1,
+            "startMinutes": 540,
+            "endMinutes": 1260,
+            "items": [
+              {
+                "id": "item-001",
+                "attractionId": "attraction-001",
+                "order": 0,
+                "durationMinutes": 60
+              },
+              {
+                "id": "item-002",
+                "attractionId": "attraction-002",
+                "order": 1,
+                "durationMinutes": 90
+              }
+            ],
+            "expenses": []
+          },
+          {
+            "id": "day-002",
+            "dayIndex": 2,
+            "startMinutes": 540,
+            "endMinutes": 1260,
+            "items": [],
+            "expenses": []
+          },
+          {
+            "id": "day-003",
+            "dayIndex": 3,
+            "startMinutes": 540,
+            "endMinutes": 1260,
+            "items": [],
+            "expenses": []
+          }
+        ]
+      }
+    }
+  },
+  "save": {
+    "method": "PUT",
+    "path": "/api/v1/trips/trip-001",
+    "request": {
+      "name": "杭州三日游",
+      "startDate": "2026-12-01",
+      "dayCount": 3,
+      "budgetLimitCents": 100000,
+      "days": [
+        {
+          "id": "day-001",
+          "dayIndex": 1,
+          "startMinutes": 540,
+          "endMinutes": 1260,
+          "items": [
+            {
+              "id": "item-001",
+              "attractionId": "attraction-001",
+              "order": 0,
+              "durationMinutes": 60
+            },
+            {
+              "id": "item-002",
+              "attractionId": "attraction-002",
+              "order": 1,
+              "durationMinutes": 90
+            }
+          ],
+          "expenses": []
+        },
+        {
+          "id": "day-002",
+          "dayIndex": 2,
+          "startMinutes": 540,
+          "endMinutes": 1260,
+          "items": [],
+          "expenses": []
+        },
+        {
+          "id": "day-003",
+          "dayIndex": 3,
+          "startMinutes": 540,
+          "endMinutes": 1260,
+          "items": [],
+          "expenses": []
+        }
+      ],
+      "baseRevision": 1
+    },
+    "status": 200,
+    "response": {
+      "code": "TRIP_SAVED",
+      "data": {
+        "id": "trip-001",
+        "name": "杭州三日游",
+        "startDate": "2026-12-01",
+        "dayCount": 3,
+        "budgetLimitCents": 100000,
+        "revision": 2,
+        "days": [
+          {
+            "id": "day-001",
+            "dayIndex": 1,
+            "startMinutes": 540,
+            "endMinutes": 1260,
+            "items": [
+              {
+                "id": "item-001",
+                "attractionId": "attraction-001",
+                "order": 0,
+                "durationMinutes": 60
+              },
+              {
+                "id": "item-002",
+                "attractionId": "attraction-002",
+                "order": 1,
+                "durationMinutes": 90
+              }
+            ],
+            "expenses": []
+          },
+          {
+            "id": "day-002",
+            "dayIndex": 2,
+            "startMinutes": 540,
+            "endMinutes": 1260,
+            "items": [],
+            "expenses": []
+          },
+          {
+            "id": "day-003",
+            "dayIndex": 3,
+            "startMinutes": 540,
+            "endMinutes": 1260,
+            "items": [],
+            "expenses": []
+          }
+        ]
+      }
+    }
+  },
+  "errors": [
+    {
+      "status": 400,
+      "response": {
+        "code": "VALIDATION_ERROR",
+        "message": "请检查旅行信息",
+        "fieldErrors": {
+          "dayCount": "应为2至5天"
+        }
+      }
+    },
+    {
+      "status": 409,
+      "response": {
+        "code": "REVISION_CONFLICT",
+        "message": "旅行已更新，请保留草案并重新加载",
+        "currentRevision": 2
+      }
+    }
+  ]
+}
