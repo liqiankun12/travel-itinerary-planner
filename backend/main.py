@@ -85,10 +85,26 @@ async def business_error(request, exc):
 def result(code, data):
     return {"code": code, "data": data}
 
+ATTRACTIONS = [
+    {"id":"spot-1","name":"湖畔公园","category":"自然风光","ticketCents":0,"defaultDurationMinutes":60,
+     "openMinutes":360,"closeMinutes":1200,"image":"/images/lake.jpg",
+     "description":"沿湖慢行，留出一段看风景与休息的时间。适合安排在行程开始或午后。"},
+    {"id":"spot-2","name":"城市博物馆","category":"文化艺术","ticketCents":2000,"defaultDurationMinutes":90,
+     "openMinutes":540,"closeMinutes":1020,"image":"/images/museum.jpg",
+     "description":"从展览中认识一座城市。建议预留完整参观时间，并留意参考闭馆时间。"},
+    {"id":"spot-3","name":"古街","category":"城市漫步","ticketCents":0,"defaultDurationMinutes":60,
+     "openMinutes":480,"closeMinutes":1260,"image":"/images/street.jpg",
+     "description":"走进街巷，看看小店与城市日常。可以与附近景点组合成轻松的步行安排。"},
+    {"id":"spot-4","name":"植物园","category":"自然风光","ticketCents":3000,"defaultDurationMinutes":90,
+     "openMinutes":480,"closeMinutes":1080,"image":"/images/garden.jpg",
+     "description":"在林荫与植物之间散步，适合慢节奏游览。建议选择白天前往。"},
+]
+
 @app.get("/api/v1/attractions")
-def attractions():
-    return result("OK", [{"id": f"spot-{i}", "name": name, "ticketCents": price, "defaultDurationMinutes": 60}
-        for i, (name, price) in enumerate([("湖畔公园",0),("城市博物馆",2000),("古街",0),("植物园",3000)],1)])
+def attractions(keyword: str = "", category: str = ""):
+    return result("OK", [spot for spot in ATTRACTIONS
+        if keyword.strip().casefold() in spot["name"].casefold()
+        and (not category or spot["category"] == category)])
 
 @app.get("/api/v1/trips")
 def trips():

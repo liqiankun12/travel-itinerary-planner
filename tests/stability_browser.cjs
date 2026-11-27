@@ -36,7 +36,7 @@ let browser;
   assert.equal(await page.getByRole('heading',{name:'测试旅行1'}).count(),1);
   assert.equal(await page.getByRole('button',{name:'删除',exact:true}).count(),1);
   await page.getByRole('button',{name:'保存旅行'}).click();
-  await page.waitForFunction(()=>document.querySelector('[role=status]').textContent.includes('未保存'));
+  await page.waitForFunction(()=>document.querySelector('[role=status]').textContent.includes('保存中'));
   assert.equal(await page.getByRole('button',{name:'返回列表'}).isDisabled(),true);
   while(!finishSave)await new Promise(resolve=>setTimeout(resolve,10));
   finishSave();
