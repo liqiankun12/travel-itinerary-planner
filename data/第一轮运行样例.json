@@ -1,0 +1,47 @@
+{
+  "id": "trip-001",
+  "name": "杭州三日游",
+  "startDate": "2026-12-01",
+  "dayCount": 3,
+  "budgetLimitCents": 100000,
+  "revision": 1,
+  "days": [
+    {
+      "id": "day-001",
+      "dayIndex": 1,
+      "startMinutes": 540,
+      "endMinutes": 1260,
+      "items": [
+        {
+          "id": "item-001",
+          "attractionId": "spot-1",
+          "order": 0,
+          "durationMinutes": 60
+        },
+        {
+          "id": "item-002",
+          "attractionId": "spot-2",
+          "order": 1,
+          "durationMinutes": 90
+        }
+      ],
+      "expenses": []
+    },
+    {
+      "id": "day-002",
+      "dayIndex": 2,
+      "startMinutes": 540,
+      "endMinutes": 1260,
+      "items": [],
+      "expenses": []
+    },
+    {
+      "id": "day-003",
+      "dayIndex": 3,
+      "startMinutes": 540,
+      "endMinutes": 1260,
+      "items": [],
+      "expenses": []
+    }
+  ]
+}
