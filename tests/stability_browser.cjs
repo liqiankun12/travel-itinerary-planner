@@ -3,7 +3,7 @@ const { spawn } = require('node:child_process');
 const path = require('node:path');
 const assert = require('node:assert/strict');
 const root = path.resolve(__dirname, '..');
-const server = spawn(process.execPath, [path.join(root, 'frontend/node_modules/vite/bin/vite.js'), '--host','127.0.0.1','--port','18173','--strictPort'], {cwd:path.join(root,'frontend'),windowsHide:true,stdio:'ignore'});
+const server = spawn(process.execPath, [path.join(root, 'frontend/node_modules/vite/bin/vite.js'), '--host','127.0.0.1','--port','18173','--strictPort','--bypass-lock'], {cwd:path.join(root,'frontend'),windowsHide:true,stdio:'ignore'});
 let browser;
 (async()=>{
  try {

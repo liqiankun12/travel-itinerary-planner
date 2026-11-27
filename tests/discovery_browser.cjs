@@ -7,7 +7,7 @@ const assert = require('node:assert/strict');
 const root=path.resolve(__dirname,'..');
 const folder=fs.mkdtempSync(path.join(os.tmpdir(),'travel-ui-'));
 const backend=spawn(path.join(root,'backend/.venv/Scripts/python.exe'),['-c',"import os;from pathlib import Path;import main,uvicorn;main.DB=Path(os.environ['TRAVEL_TEST_DB']);uvicorn.run(main.app,host='127.0.0.1',port=18000,log_level='error')"],{cwd:path.join(root,'backend'),env:{...process.env,TRAVEL_TEST_DB:path.join(folder,'test.db')},windowsHide:true,stdio:'ignore'});
-const vite=spawn(process.execPath,[path.join(root,'frontend/node_modules/vite/bin/vite.js'),'--host','127.0.0.1','--port','18174','--strictPort'],{cwd:path.join(root,'frontend'),windowsHide:true,stdio:'ignore'});
+const vite=spawn(process.execPath,[path.join(root,'frontend/node_modules/vite/bin/vite.js'),'--host','127.0.0.1','--port','18174','--strictPort','--bypass-lock'],{cwd:path.join(root,'frontend'),windowsHide:true,stdio:'ignore'});
 let browser;
 async function ready(url){for(let i=0;i<100;i++){try{if((await fetch(url)).ok)return}catch{} await new Promise(r=>setTimeout(r,100))}throw new Error('Server not ready')}
 (async()=>{

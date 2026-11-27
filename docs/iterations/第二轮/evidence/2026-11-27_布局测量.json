@@ -1,0 +1,50 @@
+{
+  "home": {
+    "viewport": {
+      "width": 1440,
+      "height": 1050
+    },
+    "hero": {
+      "top": 122,
+      "height": 420,
+      "width": 1296
+    },
+    "create": {
+      "top": 577,
+      "height": 136,
+      "width": 1296
+    },
+    "form": {
+      "top": 605,
+      "height": 64,
+      "width": 450.5625
+    }
+  },
+  "editor": {
+    "workspace": {
+      "width": 1296,
+      "height": 1256.1875,
+      "fontSize": "16px"
+    },
+    "discovery": {
+      "width": 270,
+      "height": 1256.1875,
+      "fontSize": "16px"
+    },
+    "planner": {
+      "width": 759,
+      "height": 629.390625,
+      "fontSize": "16px"
+    },
+    "overview": {
+      "width": 215,
+      "height": 433.796875,
+      "fontSize": "16px"
+    },
+    "itemButton": {
+      "width": 37.96875,
+      "height": 24,
+      "fontSize": "10px"
+    }
+  }
+}
