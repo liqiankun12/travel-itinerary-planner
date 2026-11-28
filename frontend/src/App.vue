@@ -66,6 +66,23 @@ async function open(id:string){
 function add(spot:Spot){if(busy.value)return;const items=trip.value.days[selected.value].items;if(items.some((i:ItineraryItem)=>i.attractionId===spot.id)){status.value='当天已有该景点';return}items.push({id:crypto.randomUUID(),attractionId:spot.id,order:items.length,durationMinutes:spot.defaultDurationMinutes ?? 60});dirty.value=true;status.value='未保存'}
 function move(index:number,delta:number){if(busy.value)return;const items=trip.value.days[selected.value].items;const target=index+delta;if(target<0||target>=items.length)return;[items[index],items[target]]=[items[target],items[index]];items.forEach((i:ItineraryItem,n:number)=>i.order=n);dirty.value=true;status.value='未保存'}
 function remove(index:number){if(busy.value)return;const items=trip.value.days[selected.value].items;items.splice(index,1);items.forEach((i:ItineraryItem,n:number)=>i.order=n);dirty.value=true;status.value='未保存'}
+function transfer(index:number,event:Event){
+ const target=Number((event.target as HTMLSelectElement).value)
+ ;(event.target as HTMLSelectElement).value=''
+ if(busy.value||!trip.value||!Number.isInteger(target)||target===selected.value)return
+ const source=trip.value.days[selected.value], destination=trip.value.days[target], item=source.items[index]
+ if(!destination||!item)return
+ if(destination.items.some(i=>i.attractionId===item.attractionId)){status.value='目标日期已有该景点，未移动';return}
+ if(destination.items.length>=20){status.value='目标日期最多安排20个景点';return}
+ source.items.splice(index,1);destination.items.push(item)
+ source.items.forEach((i,n)=>i.order=n);destination.items.forEach((i,n)=>i.order=n)
+ dirty.value=true;status.value='已移至第'+destination.dayIndex+'天，未保存'
+}
+function duration(item:ItineraryItem,event:Event){
+ const input=event.target as HTMLInputElement, value=Number(input.value)
+ if(busy.value||!Number.isInteger(value)||value<1||value>720){input.value=String(item.durationMinutes);status.value='停留时间须为1至720的整数分钟';return}
+ item.durationMinutes=value;dirty.value=true;status.value='未保存'
+}
 async function save(){
  if(busy.value || !trip.value)return
  const sequence=++requestSequence
@@ -138,7 +155,7 @@ onMounted(()=>refresh().catch((e)=>status.value=e.message))
           <div class="day-heading"><div><p class="eyebrow">{{dayDate(selected)}}</p><h2>今天，慢慢走。</h2></div><span class="day-hours">{{clock(trip.days[selected].startMinutes)}} — {{clock(trip.days[selected].endMinutes)}}</span></div>
           <div v-if="currentItems.length" class="timeline">
             <article v-for="(item,index) in currentItems" :key="item.id" class="itinerary-card">
-              <span class="stop-number">{{Number(index)+1}}</span><div class="itinerary-content"><div class="itinerary-title"><span class="muted">{{findSpot(item.attractionId)?.category || '景点'}}</span><span class="muted">停留 {{item.durationMinutes}} 分钟</span></div><h3>{{findSpot(item.attractionId)?.name || item.attractionId}}</h3><p>{{findSpot(item.attractionId)?.description || '给这一站留一段充裕的时间。'}}</p><div class="item-toolbar"><button @click="move(Number(index),-1)" :disabled="busy || index===0" :aria-label="'上移'+findSpot(item.attractionId)?.name">↑ 上移</button><button @click="move(Number(index),1)" :disabled="busy || index===currentItems.length-1" :aria-label="'下移'+findSpot(item.attractionId)?.name">↓ 下移</button><button @click="remove(Number(index))" :disabled="busy" class="danger">删除</button></div></div>
+              <span class="stop-number">{{Number(index)+1}}</span><div class="itinerary-content"><div class="itinerary-title"><span class="muted">{{findSpot(item.attractionId)?.category || '景点'}}</span><span class="muted">停留 {{item.durationMinutes}} 分钟</span></div><h3>{{findSpot(item.attractionId)?.name || item.attractionId}}</h3><p>{{findSpot(item.attractionId)?.description || '给这一站留一段充裕的时间。'}}</p><div class="item-edit"><label>停留分钟<input type="number" min="1" max="720" step="1" :value="item.durationMinutes" @change="duration(item,$event)" :disabled="busy" :aria-label="'停留分钟'+findSpot(item.attractionId)?.name"></label><label>移至日期<select @change="transfer(Number(index),$event)" :disabled="busy" :aria-label="'移动日期'+findSpot(item.attractionId)?.name"><option value="">选择日期</option><option v-for="(day,dayIndex) in trip.days" :key="day.id" :value="dayIndex" :disabled="Number(dayIndex)===selected">第{{day.dayIndex}}天</option></select></label></div><div class="item-toolbar"><button @click="move(Number(index),-1)" :disabled="busy || index===0" :aria-label="'上移'+findSpot(item.attractionId)?.name">↑ 上移</button><button @click="move(Number(index),1)" :disabled="busy || index===currentItems.length-1" :aria-label="'下移'+findSpot(item.attractionId)?.name">↓ 下移</button><button @click="remove(Number(index))" :disabled="busy" class="danger">删除</button></div></div>
             </article>
           </div>
           <div v-else class="empty-state day-empty"><span class="empty-symbol">＋</span><h3>给今天选一个起点</h3><p>从左侧加入喜欢的景点，<br>再用上下移动调整访问顺序。</p></div>
@@ -163,4 +180,9 @@ onMounted(()=>refresh().catch((e)=>status.value=e.message))
 @media(min-width:1500px){.workspace{grid-template-columns:290px minmax(350px,1fr) 245px;gap:35px}}
 @media(max-width:1100px){.workspace{grid-template-columns:240px minmax(0,1fr)}.day-overview{grid-column:2;position:static}.hero{min-height:350px}.hero-image{min-height:340px}.create-panel{align-items:start;flex-direction:column}.create-form{width:100%}.create-form label:first-child{flex:1}.trip-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){.topbar{height:68px}.brand-caption,.topbar-note{display:none}main{padding:0 5%}.hero{grid-template-columns:1fr;gap:0}.hero-copy{padding:25px 0}.hero h1{font-size:40px}.hero-image{min-height:220px;border-radius:65px 7px 7px 7px}.create-panel{padding:20px;margin-top:25px}.create-form{flex-direction:column;align-items:stretch}.trip-grid{grid-template-columns:1fr}.editor-heading{align-items:start;flex-direction:column;gap:15px}.editor-heading h1{font-size:27px}.save-actions{width:100%;justify-content:space-between}.workspace{grid-template-columns:1fr;gap:25px}.day-planner{order:1}.discovery{order:2;border-right:0;padding-right:0}.spot-card{display:grid;grid-template-columns:110px minmax(0,1fr)}.spot-image{height:100%;min-height:140px}.spot-body{padding:13px}.spot-title{align-items:start}.day-overview{grid-column:auto;order:3}.day-heading{margin:22px 0}.itinerary-content{padding:16px}.itinerary-title .muted{font-size:10px}footer{flex-direction:column}.hero-description{font-size:12px}}
+/* 第三轮：主操作优先、清晰的输入与点击区域 */
+.hero{min-height:190px;max-height:210px;overflow:hidden}.hero-image{min-height:190px;max-height:210px}.hero-copy{padding:12px 0}.hero h1{font-size:36px}.hero-description{display:none}.create-panel{margin-top:20px}
+.item-edit{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}.item-edit label{display:flex;flex-direction:column;gap:6px;font-size:14px}.item-edit input,.item-edit select{width:130px;min-height:40px;border:1px solid var(--line);border-radius:6px;padding:8px;background:white;font:inherit}
+.item-toolbar{flex-wrap:wrap}.item-toolbar button,.compact,.filters button,.spot-actions .text-link,.back-link{font-size:14px;min-height:40px}.day-hours,.day-tabs span,.day-tabs small,.muted{font-size:12px}
+@media(max-width:700px){.hero{max-height:none;display:block}.hero-image{display:none}.hero-copy{padding:12px 0}.hero h1{font-size:30px}.item-toolbar button,.compact,.filters button,.spot-actions .text-link,.item-edit input,.item-edit select{min-height:44px}}
 </style>
